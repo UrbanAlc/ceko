@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cekilis-deployment
+  namespace: test
+  labels:
+    app: cek
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cek
+  template:
+    metadata:
+      labels:
+        app: cek
+    spec:
+      containers:
+      - name: cekilisimages
+        image: alperenyuksel/cek:1
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cekilis-hpa
+  namespace: test
+  labels:
+    app: cek
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cekilis-deployment
+  minReplicas: 3
+  maxReplicas: 30
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 15       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cekilis-service
+  namespace: test
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: cek
+  type: LoadBalancer
+---
+
