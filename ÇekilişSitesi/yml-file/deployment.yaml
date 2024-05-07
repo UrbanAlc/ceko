@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: cekilisimages
-        image: alperenyuksel/cek:@VERSION
+        image: alperenyuksel/ceko:@VERSION
         resources:
           limits:
             memory: "1Gi"
